@@ -7,7 +7,7 @@ import Members from "./components/members";
 
 interface Message {
     text: string;
-    sender: string | null;
+    username: string | null;
 }
 
 export default function Chatroom() {
@@ -29,7 +29,7 @@ export default function Chatroom() {
     const handleSendMessage = (e: React.FormEvent) => {
         e.preventDefault();
         if (message.trim()) {
-            setMessages([...messages, { text: message, sender: username }]);
+            setMessages([...messages, { text: message, username: username }]);
             setMessage('');
         }
     };
@@ -48,8 +48,8 @@ export default function Chatroom() {
 
                     <div className="flex-grow overflow-y-auto px-4">
                         {messages.map((msg, index) => (
-                            <div key={index} className={`mb-2 ${msg.sender === username ? 'text-right' : 'text-left'}`}>
-                                <span className={`inline-block p-2 rounded-lg ${msg.sender === username ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'}`}>
+                            <div key={index} className={`mb-2 ${msg.username === username ? 'text-right' : 'text-left'}`}>
+                                <span className={`inline-block p-2 rounded-lg ${msg.username === username ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'}`}>
                                     {msg.text}
                                 </span>
                             </div>
