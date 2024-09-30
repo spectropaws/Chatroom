@@ -3,6 +3,7 @@
 // for __dirname
 import { fileURLToPath } from "url";
 import path, { dirname } from "path";
+import cors from "cors";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -17,6 +18,9 @@ const port: string | Number = process.env.PORT || 8000;
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(cors({
+    "origin": ["http://localhost:3000", "http://127.0.0.1:3000"],
+}));
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -27,7 +31,12 @@ const io = new Server(server, {
 });
 
 // list of users
-const users: { [key: string]: string } = {};
+const users: { [key: string]: string } = {
+    "sdfvs432": "spectropaws",
+    "sdf432": "vedantRaut",
+    "fvs432": "Borikar",
+    "sfvs432": "Parate",
+};
 
 io.on("connection", async (socket: Socket) => {
     console.log("User connected: " + socket.id);
@@ -53,6 +62,10 @@ io.on("connection", async (socket: Socket) => {
 
 app.get("/", (req, res) => {
     res.send("Hello World!");    
+});
+
+app.get("/getAllUsers", (req, res) => {
+    res.send(Object.values(users)); 
 });
 
 server.listen(port, () => {
