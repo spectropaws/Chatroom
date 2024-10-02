@@ -17,7 +17,7 @@ export default function Members() {
     }, []);
 
     return (
-        <div className="w-1/4 min-w-[300px] h-full flex flex-col items-center py-10">
+        <div className="w-1/4 min-w-[300px] h-full flex flex-col items-center py-10 border-r-2 border-gray-300">
             <h1 className="text-3xl">Members</h1>
             <div className="w-[80%] h-[1px] bg-gray-300 my-8" />
             <div className="w-full h-full px-3">
