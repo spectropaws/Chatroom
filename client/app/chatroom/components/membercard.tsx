@@ -5,7 +5,7 @@ import { io } from "socket.io-client";
 
 export default function MemberCard({ username }: { username: string }) {
 
-    const socket = useRef(io('http://localhost:8000')).current;
+    const socket = useRef(io(`${process.env.NEXT_PUBLIC_API_URL}`)).current;
 
     const [userTyping, setUserTyping] = useState<string>("");
 

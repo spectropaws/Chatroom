@@ -16,7 +16,7 @@ export default function Chatroom() {
     const searchParams = useSearchParams();
     const username = searchParams.get('username');
 
-    const socket = useRef(io('http://localhost:8000')).current;
+    const socket = useRef(io(`${process.env.NEXT_PUBLIC_API_URL}`)).current;
 
     const [joinedRoom, setJoinedRoom] = useState<boolean>(false);
     const [message, setMessage] = useState<string>('');
