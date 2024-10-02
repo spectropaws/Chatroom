@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import Members from "./components/members";
+import { io } from "socket.io-client";
 
 interface Message {
     text: string;
@@ -15,11 +16,32 @@ export default function Chatroom() {
     const searchParams = useSearchParams();
     const username = searchParams.get('username');
 
+    const socket = useRef(io('http://localhost:8000')).current;
+
+    const [joinedRoom, setJoinedRoom] = useState<boolean>(false);
     const [message, setMessage] = useState<string>('');
     const [messages, setMessages] = useState<Message[]>([]);
 
     const chatEndref = useRef<HTMLDivElement>(null);
+   
+    useEffect(() => {
+        if (!joinedRoom) {
+            socket.emit('joinroom', username);
+            setJoinedRoom(true);
+        }
+    }, [joinedRoom, socket, username]);
 
+    useEffect(() => {
+    socket.on('message', (data: Message) => {
+        console.log(data);
+        setMessages(prevMessages => [...prevMessages, data]); 
+    });
+
+    return () => {
+        socket.off('message');
+    };
+}, [socket]);
+    
     useEffect(() => {
         if (chatEndref.current) {
             chatEndref.current.scrollIntoView({ behavior: 'smooth' });
@@ -32,6 +54,13 @@ export default function Chatroom() {
             setMessages([...messages, { text: message, username: username }]);
             setMessage('');
         }
+        socket.emit("message", { text: message, username: username });
+    };
+
+    const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setMessage(e.target.value);
+
+        socket.emit('typing', { username: username });
     };
 
     return (
@@ -57,7 +86,7 @@ export default function Chatroom() {
                         <div ref={chatEndref} />
                     </div>
                     <form onSubmit={handleSendMessage} className="bottom-0 left-0 right-0 flex p-4 bg-gray-100 border-t">
-                        <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Type a message" className="flex-1 border rounded p-2" />
+                        <input type="text" value={message} onChange={handleMessageChange} placeholder="Type a message" className="flex-1 border rounded p-2" />
                         <button type="submit" className="ml-2 bg-blue-500 text-white rounded p-2">Send</button>
                     </form>
 

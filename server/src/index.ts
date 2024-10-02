@@ -27,45 +27,45 @@ const io = new Server(server, {
     cors: {
         origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
         methods: ["GET", "POST"],
+        transports: ["websocket", "polling"],
     },
+    allowEIO3: true,
 });
 
 // list of users
-const users: { [key: string]: string } = {
-    "sdfvs432": "spectropaws",
-    "sdf432": "vedantRaut",
-    "fvs432": "Borikar",
-    "sfvs432": "Parate",
-};
+const users: { [key: string]: string } = {};
 
 io.on("connection", async (socket: Socket) => {
     console.log("User connected: " + socket.id);
 
+
     socket.on("joinroom", (username: string) => {
         users[socket.id] = username;
-        io.emit("memberconnect", {user: username});
+        io.emit("memberconnect", { user: username });
+        console.log(username);
     });
 
     socket.on("message", (message: { user: string, message: string }) => {
         socket.broadcast.emit("message", message);
     });
 
-    socket.on("typing", (isTyping: boolean) => {
-        socket.broadcast.emit("typing", isTyping);
+    socket.on("typing", (user: { username: string }) => {
+        socket.broadcast.emit("typing", user);
     });
 
     socket.on("disconnect", () => {
-        io.emit("memberDisconnect", {user: users[socket.id]});
+        console.log("User disconnected: " + socket.id);
+        io.emit("memberDisconnect", { user: users[socket.id] });
         delete users[socket.id];
     })
 });
 
 app.get("/", (req, res) => {
-    res.send("Hello World!");    
+    res.send("Hello World!");
 });
 
 app.get("/getAllUsers", (req, res) => {
-    res.send(Object.values(users)); 
+    res.send(Object.values(users));
 });
 
 server.listen(port, () => {
