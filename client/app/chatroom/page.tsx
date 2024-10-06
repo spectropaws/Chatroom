@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useRouter } from 'next/navigation';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import Members from "./components/members";
 import { io } from "socket.io-client";
 
@@ -11,7 +11,7 @@ interface Message {
     username: string | null;
 }
 
-export default function Chatroom() {
+function Chatroom() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const username = searchParams.get('username');
@@ -93,5 +93,13 @@ export default function Chatroom() {
                 </div>
             </div>
         </div>
+    )
+}
+
+export default function Page() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <Chatroom />
+        </Suspense>
     )
 }
